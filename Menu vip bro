@@ -1,0 +1,399 @@
+--[[
+    ╔══════════════════════════════════════════════════════════╗
+    ║     ONE BY CHAT - GIAO DIỆN THEO YÊU CẦU               ║
+    ║     ☠️  TÁC GIẢ: KIETDEPZAI  ☠️                          ║
+    ║     🎨  NỀN ĐEN - 9 TAB:                                ║
+    ║     📋 INFO  ⚙️ SETTINGS  🌾 FARMING  📦 ITEMS         ║
+    ║     ⚡ AUTO STAT  🍎 FRUIT & RAID  📍 ĐỊNH VỊ           ║
+    ║     🌊 SEA EVENT  🛠️ THÊM                               ║
+    ║     📅  CẬP NHẬT: 2026                                  ║
+    ╚══════════════════════════════════════════════════════════╝
+--]]
+
+-- KIỂM TRA VÀ XÓA GUI CŨ
+pcall(function()
+    game.CoreGui:FindFirstChild("OneByChat"):Destroy()
+end)
+
+-- KIỂM TRA THIẾT BỊ
+local UserInputService = game:GetService("UserInputService")
+local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+local deviceType = isMobile and "📱 MOBILE" or "💻 PC"
+
+-- KÍCH THƯỚC MENU (2/3 màn hình)
+local screenSize = workspace.CurrentCamera.ViewportSize
+local menuWidth = screenSize.X * 0.7  -- 70% chiều ngang
+local menuHeight = screenSize.Y * 0.75 -- 75% chiều cao
+local menuX = (screenSize.X - menuWidth) / 2
+local menuY = (screenSize.Y - menuHeight) / 2
+
+-- TẠO GUI CHÍNH
+local OneByChat = Instance.new("ScreenGui")
+OneByChat.Name = "OneByChat"
+OneByChat.Parent = game:GetService("CoreGui")
+OneByChat.ResetOnSpawn = false
+OneByChat.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- FRAME CHÍNH (nền đen)
+local MainFrame = Instance.new("Frame")
+MainFrame.Parent = OneByChat
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Nền đen
+MainFrame.BackgroundTransparency = 0.1 -- Hơi trong suốt
+MainFrame.BorderSizePixel = 0
+MainFrame.Size = UDim2.new(0, menuWidth, 0, menuHeight)
+MainFrame.Position = UDim2.new(0, menuX, 0, menuY)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.ClipsDescendants = true
+
+-- THANH TIÊU ĐỀ
+local TitleBar = Instance.new("Frame")
+TitleBar.Parent = MainFrame
+TitleBar.Size = UDim2.new(1, 0, 0, 40)
+TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TitleBar.BorderSizePixel = 0
+
+local Title = Instance.new("TextLabel")
+Title.Parent = TitleBar
+Title.Size = UDim2.new(1, -80, 1, 0)
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.Text = "☠️ ONE BY CHAT ☠️"
+Title.TextColor3 = Color3.fromRGB(0, 255, 128)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
+Title.BackgroundTransparency = 1
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- NÚT THU GỌN
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Parent = TitleBar
+MinimizeBtn.Size = UDim2.new(0, 35, 0, 35)
+MinimizeBtn.Position = UDim2.new(1, -80, 0, 2.5)
+MinimizeBtn.Text = "−"
+MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeBtn.TextSize = 25
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MinimizeBtn.BorderSizePixel = 0
+MinimizeBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- NÚT ĐÓNG
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Parent = TitleBar
+CloseBtn.Size = UDim2.new(0, 35, 0, 35)
+CloseBtn.Position = UDim2.new(1, -40, 0, 2.5)
+CloseBtn.Text = "✕"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 20
+CloseBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+CloseBtn.BorderSizePixel = 0
+CloseBtn.MouseButton1Click:Connect(function()
+    OneByChat:Destroy()
+end)
+
+-- ===========================================
+-- NÚT AVATAR BÊN TRÁI (nhỏ hơn)
+-- ===========================================
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Parent = OneByChat
+ToggleButton.Size = UDim2.new(0, 55, 0, 55)
+ToggleButton.Position = UDim2.new(0, 15, 0.5, -27.5)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+ToggleButton.BackgroundTransparency = 0.1
+ToggleButton.BorderSizePixel = 2
+ToggleButton.BorderColor3 = Color3.fromRGB(0, 255, 128)
+ToggleButton.Text = "ON"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextSize = 16
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Draggable = true
+
+-- Bo tròn
+local UICorner = Instance.new("UICorner")
+UICorner.Parent = ToggleButton
+UICorner.CornerRadius = UDim.new(1, 0)
+
+-- Đèn báo trạng thái
+local StatusLight = Instance.new("Frame")
+StatusLight.Parent = ToggleButton
+StatusLight.Size = UDim2.new(0, 12, 0, 12)
+StatusLight.Position = UDim2.new(1, -17, 0, 5)
+StatusLight.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+StatusLight.BorderSizePixel = 0
+local LightCorner = Instance.new("UICorner")
+LightCorner.Parent = StatusLight
+LightCorner.CornerRadius = UDim.new(1, 0)
+
+-- Xử lý bật/tắt menu
+ToggleButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+    if MainFrame.Visible then
+        ToggleButton.Text = "OFF"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+        StatusLight.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    else
+        ToggleButton.Text = "ON"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        StatusLight.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    end
+end)
+
+-- Hiệu ứng hover
+ToggleButton.MouseEnter:Connect(function()
+    ToggleButton.Size = UDim2.new(0, 60, 0, 60)
+end)
+ToggleButton.MouseLeave:Connect(function()
+    ToggleButton.Size = UDim2.new(0, 55, 0, 55)
+end)
+
+ToggleButton.ZIndex = 10
+MainFrame.ZIndex = 5
+
+-- ===========================================
+-- TẠO CÁC TAB (9 TAB)
+-- ===========================================
+local TabFrame = Instance.new("Frame")
+TabFrame.Parent = MainFrame
+TabFrame.Size = UDim2.new(1, -20, 0, 45)
+TabFrame.Position = UDim2.new(0, 10, 0, 50)
+TabFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TabFrame.BorderSizePixel = 0
+
+-- Danh sách 9 tab (đã bỏ nội dung trong ngoặc)
+local tabs = {
+    {name = "📋 INFO", id = 1},
+    {name = "⚙️ SETTINGS", id = 2},
+    {name = "🌾 FARMING", id = 3},
+    {name = "📦 ITEMS", id = 4},
+    {name = "⚡ AUTO STAT", id = 5},
+    {name = "🍎 FRUIT & RAID", id = 6},
+    {name = "📍 ĐỊNH VỊ", id = 7},
+    {name = "🌊 SEA EVENT", id = 8},
+    {name = "🛠️ THÊM", id = 9}
+}
+
+local tabButtons = {}
+local currentTab = 1
+
+-- Tạo nội dung cho từng tab
+local ContentFrame = Instance.new("ScrollingFrame")
+ContentFrame.Parent = MainFrame
+ContentFrame.Size = UDim2.new(1, -20, 1, -110) -- Trừ không gian cho title và tab
+ContentFrame.Position = UDim2.new(0, 10, 0, 100)
+ContentFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+ContentFrame.BackgroundTransparency = 0.5
+ContentFrame.BorderSizePixel = 0
+ContentFrame.ScrollBarThickness = 8
+ContentFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 128)
+ContentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ContentFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+-- ===========================================
+-- HÀM TẠO NỘI DUNG CHO CÁC TAB
+-- ===========================================
+local function ClearContent()
+    for _, v in pairs(ContentFrame:GetChildren()) do
+        v:Destroy()
+    end
+end
+
+local function CreateToggle(parent, name, desc, yPos, default)
+    local frame = Instance.new("Frame")
+    frame.Parent = parent
+    frame.Size = UDim2.new(1, -10, 0, 60)
+    frame.Position = UDim2.new(0, 5, 0, yPos)
+    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    frame.BorderSizePixel = 0
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Parent = frame
+    nameLabel.Size = UDim2.new(1, -80, 0, 25)
+    nameLabel.Position = UDim2.new(0, 10, 0, 5)
+    nameLabel.Text = name
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.TextScaled = true
+    nameLabel.Font = Enum.Font.GothamSemibold
+    nameLabel.BackgroundTransparency = 1
+
+    local descLabel = Instance.new("TextLabel")
+    descLabel.Parent = frame
+    descLabel.Size = UDim2.new(1, -80, 0, 20)
+    descLabel.Position = UDim2.new(0, 10, 0, 30)
+    descLabel.Text = desc
+    descLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+    descLabel.TextXAlignment = Enum.TextXAlignment.Left
+    descLabel.TextScaled = true
+    descLabel.Font = Enum.Font.Gotham
+    descLabel.BackgroundTransparency = 1
+
+    local toggle = Instance.new("TextButton")
+    toggle.Parent = frame
+    toggle.Size = UDim2.new(0, 50, 0, 25)
+    toggle.Position = UDim2.new(1, -60, 0, 17.5)
+    toggle.Text = default and "ON" or "OFF"
+    toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggle.TextSize = 14
+    toggle.BackgroundColor3 = default and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(150, 0, 0)
+    toggle.BorderSizePixel = 0
+
+    return frame, toggle
+end
+
+local function CreateButton(parent, name, yPos, color)
+    local btn = Instance.new("TextButton")
+    btn.Parent = parent
+    btn.Size = UDim2.new(1, -10, 0, 40)
+    btn.Position = UDim2.new(0, 5, 0, yPos)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 16
+    btn.BackgroundColor3 = color or Color3.fromRGB(0, 100, 150)
+    btn.BorderSizePixel = 0
+    return btn
+end
+
+-- ===========================================
+-- TẠO NỘI DUNG CHO TAB 1 (INFO) - MẪU
+-- ===========================================
+local function CreateTab1()
+    local yPos = 0
+    
+    local infoFrame = Instance.new("Frame")
+    infoFrame.Parent = ContentFrame
+    infoFrame.Size = UDim2.new(1, -10, 0, 120)
+    infoFrame.Position = UDim2.new(0, 5, 0, yPos)
+    infoFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    infoFrame.BorderSizePixel = 0
+    yPos = yPos + 125
+    
+    local player = game.Players.LocalPlayer
+    local stats = player:FindFirstChild("leaderstats")
+    
+    local infoText = Instance.new("TextLabel")
+    infoText.Parent = infoFrame
+    infoText.Size = UDim2.new(1, -20, 1, -10)
+    infoText.Position = UDim2.new(0, 10, 0, 5)
+    infoText.Text = "👤 Tên: " .. player.Name .. "\n" ..
+                    "💰 Beli: " .. (stats and stats:FindFirstChild("Beli") and stats.Beli.Value or "N/A") .. "\n" ..
+                    "💎 Fragments: " .. (stats and stats:FindFirstChild("Fragments") and stats.Fragments.Value or "N/A") .. "\n" ..
+                    "📊 Level: " .. (stats and stats:FindFirstChild("Level") and stats.Level.Value or "N/A")
+    infoText.TextColor3 = Color3.fromRGB(200, 200, 200)
+    infoText.TextXAlignment = Enum.TextXAlignment.Left
+    infoText.TextYAlignment = Enum.TextYAlignment.Top
+    infoText.TextSize = 16
+    infoText.Font = Enum.Font.Gotham
+    infoText.BackgroundTransparency = 1
+    
+    local refreshBtn = CreateButton(ContentFrame, "🔄 LÀM MỚI", yPos, Color3.fromRGB(0, 100, 150))
+    refreshBtn.MouseButton1Click:Connect(function()
+        ClearContent()
+        CreateTab1()
+    end)
+end
+
+-- Các tab khác sẽ được thêm nội dung sau
+local function CreateTab2() end
+local function CreateTab3() end
+local function CreateTab4() end
+local function CreateTab5() end
+local function CreateTab6() end
+local function CreateTab7() end
+local function CreateTab8() end
+local function CreateTab9() end
+
+-- ===========================================
+-- TẠO CÁC NÚT TAB
+-- ===========================================
+local tabWidth = (menuWidth - 40) / #tabs
+
+for i, tab in ipairs(tabs) do
+    local btn = Instance.new("TextButton")
+    btn.Parent = TabFrame
+    btn.Size = UDim2.new(0, tabWidth - 2, 1, -10)
+    btn.Position = UDim2.new(0, (i-1) * tabWidth + 5, 0, 5)
+    btn.Text = tab.name
+    btn.TextColor3 = i == currentTab and Color3.fromRGB(0, 255, 128) or Color3.fromRGB(200, 200, 200)
+    btn.TextSize = isMobile and 12 or 14
+    btn.TextWrapped = true
+    btn.BackgroundColor3 = i == currentTab and Color3.fromRGB(0, 50, 30) or Color3.fromRGB(30, 30, 30)
+    btn.BorderSizePixel = 0
+    btn.AutoButtonColor = false
+    
+    btn.MouseButton1Click:Connect(function()
+        currentTab = i
+        for j, b in ipairs(TabFrame:GetChildren()) do
+            if b:IsA("TextButton") then
+                b.TextColor3 = j == i and Color3.fromRGB(0, 255, 128) or Color3.fromRGB(200, 200, 200)
+                b.BackgroundColor3 = j == i and Color3.fromRGB(0, 50, 30) or Color3.fromRGB(30, 30, 30)
+            end
+        end
+        
+        ClearContent()
+        if i == 1 then CreateTab1()
+        elseif i == 2 then CreateTab2()
+        elseif i == 3 then CreateTab3()
+        elseif i == 4 then CreateTab4()
+        elseif i == 5 then CreateTab5()
+        elseif i == 6 then CreateTab6()
+        elseif i == 7 then CreateTab7()
+        elseif i == 8 then CreateTab8()
+        elseif i == 9 then CreateTab9()
+        end
+    end)
+    
+    table.insert(tabButtons, btn)
+end
+
+-- Mở tab 1 mặc định
+CreateTab1()
+
+-- ===========================================
+-- NÚT FLOAT CHO MOBILE
+-- ===========================================
+if isMobile then
+    local FloatButton = Instance.new("TextButton")
+    FloatButton.Parent = OneByChat
+    FloatButton.Size = UDim2.new(0, 45, 0, 45)
+    FloatButton.Position = UDim2.new(0.9, -22.5, 0.9, -22.5)
+    FloatButton.BackgroundColor3 = Color3.fromRGB(0, 150, 75)
+    FloatButton.BackgroundTransparency = 0.2
+    FloatButton.BorderSizePixel = 0
+    FloatButton.Text = "☠️"
+    FloatButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    FloatButton.TextSize = 20
+    FloatButton.Font = Enum.Font.GothamBold
+    
+    local floatCorner = Instance.new("UICorner")
+    floatCorner.Parent = FloatButton
+    floatCorner.CornerRadius = UDim.new(1, 0)
+    
+    FloatButton.MouseButton1Click:Connect(function()
+        MainFrame.Visible = not MainFrame.Visible
+    end)
+end
+
+-- ===========================================
+-- WATERMARK
+-- ===========================================
+local Watermark = Instance.new("TextLabel")
+Watermark.Parent = OneByChat
+Watermark.Size = UDim2.new(0, 250, 0, 25)
+Watermark.Position = UDim2.new(0, 10, 1, -30)
+Watermark.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Watermark.BackgroundTransparency = 0.4
+Watermark.BorderSizePixel = 0
+Watermark.Text = "☠️ ONE BY CHAT | by kietdepzai 👑"
+Watermark.TextColor3 = Color3.fromRGB(0, 255, 128)
+Watermark.TextScaled = true
+Watermark.Font = Enum.Font.Gotham
+
+-- THÔNG BÁO HOÀN TẤT
+game.StarterGui:SetCore("SendNotification", {
+    Title = "ONE BY CHAT",
+    Text = "✅ GIAO DIỆN 9 TAB ĐÃ SẴN SÀNG!",
+    Duration = 3
+})
+
+print("✅ GIAO DIỆN 9 TAB ĐÃ ĐƯỢC TẠO THÀNH CÔNG!")
